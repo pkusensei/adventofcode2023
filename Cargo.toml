@@ -2,5 +2,6 @@
 
 members = [
     "d01",
+    "d02"
 ]
 resolver = "2"
