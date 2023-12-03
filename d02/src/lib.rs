@@ -19,19 +19,18 @@ fn p2(input: &str) -> u32 {
 fn parse(input: &str) -> impl Iterator<Item = (usize, u32, u32, u32)> + '_ {
     input.lines().enumerate().map(|(idx, line)| {
         let nums = parse_line(line);
-        let r = nums.iter().map(|x| x.0).max().unwrap();
-        let g = nums.iter().map(|x| x.1).max().unwrap();
-        let b = nums.iter().map(|x| x.2).max().unwrap();
+        let r = nums.clone().map(|x| x.0).max().unwrap();
+        let g = nums.clone().map(|x| x.1).max().unwrap();
+        let b = nums.map(|x| x.2).max().unwrap();
         (idx, r, g, b)
     })
 }
 
-fn parse_line(line: &str) -> Vec<(u32, u32, u32)> {
-    let mut v = vec![];
-    let mut r = 0;
-    let mut g = 0;
-    let mut b = 0;
-    for take in line.split_once(':').unwrap().1.split(';') {
+fn parse_line(line: &str) -> impl Iterator<Item = (u32, u32, u32)> + Clone + '_ {
+    line.split_once(':').unwrap().1.split(';').map(|take| {
+        let mut r = 0;
+        let mut g = 0;
+        let mut b = 0;
         for pair in take.split(',') {
             let mut s = pair.trim().split_whitespace();
             let num = s.next().unwrap().parse().unwrap();
@@ -42,12 +41,8 @@ fn parse_line(line: &str) -> Vec<(u32, u32, u32)> {
                 _ => unreachable!(),
             }
         }
-        v.push((r, g, b));
-        r = 0;
-        g = 0;
-        b = 0;
-    }
-    v
+        (r, g, b)
+    })
 }
 
 #[cfg(test)]
