@@ -2,6 +2,10 @@
 
 members = [
     "d01",
-    "d02"
+    "d02",
+    "d03"
 ]
 resolver = "2"
+
+[workspace.dependencies]
+itertools = "0.12.0"
