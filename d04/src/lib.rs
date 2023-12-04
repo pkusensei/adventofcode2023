@@ -3,17 +3,7 @@
 use std::collections::{HashMap, HashSet};
 
 fn p1(input: &str) -> u32 {
-    input
-        .lines()
-        .map(parse_line)
-        .filter_map(|count| {
-            if count > 0 {
-                Some(2u32.pow(count as u32 - 1))
-            } else {
-                None
-            }
-        })
-        .sum()
+    input.lines().map(|line| (1 << parse_line(line)) >> 1).sum()
 }
 
 fn p2(input: &str) -> usize {
@@ -21,27 +11,24 @@ fn p2(input: &str) -> usize {
     for (idx, count) in input.lines().map(parse_line).enumerate() {
         let curr = *cards.get(&idx).unwrap();
         for i in 0..count {
-            cards.get_mut(&(idx + 1 + i)).map(|value| *value += curr);
+            if let Some(value) = cards.get_mut(&(idx + 1 + i)) {
+                *value += curr
+            }
         }
     }
     cards.values().sum()
 }
 
 fn parse_line(line: &str) -> usize {
+    fn to_set(v: &str) -> HashSet<u32> {
+        v.split_whitespace().map(|s| s.parse().unwrap()).collect()
+    }
+
     let (wins, nums) = line
         .split_once(':')
-        .map(|(_, s)| s.split_once('|'))
-        .flatten()
+        .and_then(|(_, s)| s.split_once('|'))
         .unwrap();
-    let wins: HashSet<u32> = wins
-        .split_whitespace()
-        .map(|s| s.parse().unwrap())
-        .collect();
-    let nums = nums
-        .split_whitespace()
-        .map(|s| s.parse().unwrap())
-        .collect();
-    wins.intersection(&nums).count()
+    to_set(wins).intersection(&to_set(nums)).count()
 }
 
 #[cfg(test)]

@@ -32,7 +32,7 @@ fn parse_line(line: &str) -> impl Iterator<Item = (u32, u32, u32)> + Clone + '_ 
         let mut g = 0;
         let mut b = 0;
         for pair in take.split(',') {
-            let mut s = pair.trim().split_whitespace();
+            let mut s = pair.split_whitespace();
             let num = s.next().unwrap().parse().unwrap();
             match s.next().unwrap() {
                 "red" => r = num,
