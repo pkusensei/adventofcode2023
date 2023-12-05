@@ -1,22 +1,19 @@
 #![allow(dead_code)]
 
-use std::collections::{HashMap, HashSet};
+use std::collections::HashSet;
 
 fn p1(input: &str) -> u32 {
     input.lines().map(|line| (1 << parse_line(line)) >> 1).sum()
 }
 
 fn p2(input: &str) -> usize {
-    let mut cards: HashMap<_, _> = input.lines().enumerate().map(|(i, _)| (i, 1)).collect();
+    let mut cards = vec![1; input.lines().count()];
     for (idx, count) in input.lines().map(parse_line).enumerate() {
-        let curr = *cards.get(&idx).unwrap();
         for i in 0..count {
-            if let Some(value) = cards.get_mut(&(idx + 1 + i)) {
-                *value += curr
-            }
+            cards[idx + 1 + i] += cards[idx];
         }
     }
-    cards.values().sum()
+    cards.into_iter().sum()
 }
 
 fn parse_line(line: &str) -> usize {
@@ -24,11 +21,10 @@ fn parse_line(line: &str) -> usize {
         v.split_whitespace().map(|s| s.parse().unwrap()).collect()
     }
 
-    let (wins, nums) = line
-        .split_once(':')
+    line.split_once(':')
         .and_then(|(_, s)| s.split_once('|'))
-        .unwrap();
-    to_set(wins).intersection(&to_set(nums)).count()
+        .map(|(wins, nums)| to_set(wins).intersection(&to_set(nums)).count())
+        .unwrap()
 }
 
 #[cfg(test)]
