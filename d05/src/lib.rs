@@ -87,7 +87,7 @@ struct Range {
     rng: u64,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy)]
 struct Seeds {
     st: u64,
     rng: u64,
