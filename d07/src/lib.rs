@@ -59,25 +59,21 @@ enum Kind {
 
 impl Kind {
     fn new(cards: &[char]) -> Self {
-        let map = cards.iter().cloned().counts();
-        match map.len() {
-            1 => Kind::Five,
-            5 => Kind::High,
-            4 => Kind::OnePair,
-            2 => {
-                if map.values().contains(&4) {
-                    Kind::Four // AA8AA
-                } else {
-                    Kind::FullHouse // 23332
-                }
-            }
-            3 => {
-                if map.values().contains(&3) {
-                    Kind::Three // TTT98
-                } else {
-                    Kind::TwoPair // 23432
-                }
-            }
+        let counts = cards
+            .iter()
+            .counts()
+            .values()
+            .sorted()
+            .cloned()
+            .collect::<Vec<_>>();
+        match counts[..] {
+            [5] => Kind::Five,
+            [1, 4] => Kind::Four,
+            [2, 3] => Kind::FullHouse,
+            [1, 1, 3] => Kind::Three,
+            [1, 2, 2] => Kind::TwoPair,
+            [1, 1, 1, 2] => Kind::OnePair,
+            [1, .., 1] => Kind::High,
             _ => unreachable!(),
         }
     }
