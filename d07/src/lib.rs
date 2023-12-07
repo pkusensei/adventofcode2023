@@ -1,0 +1,180 @@
+#![allow(dead_code)]
+
+use itertools::Itertools;
+
+const CARDS: [char; 13] = [
+    'A', 'K', 'Q', 'J', 'T', '9', '8', '7', '6', '5', '4', '3', '2',
+];
+
+const CARDS2: [char; 13] = [
+    'A', 'K', 'Q', 'T', '9', '8', '7', '6', '5', '4', '3', '2', 'J',
+];
+
+fn p1(input: &str) -> usize {
+    solve(input, parse_line)
+}
+
+fn p2(input: &str) -> usize {
+    solve(input, |line| parse_line(line).update())
+}
+
+fn solve(input: &str, parse: fn(&str) -> Hand) -> usize {
+    input
+        .lines()
+        .map(parse)
+        .sorted()
+        .enumerate()
+        .map(|(i, c)| (i + 1) * c.bid)
+        .sum()
+}
+
+fn parse_line(line: &str) -> Hand {
+    let mut it = line.split_whitespace();
+    let cards: [char; 5] = it
+        .next()
+        .unwrap()
+        .chars()
+        .collect::<Vec<_>>()
+        .try_into()
+        .unwrap();
+    let bid = it.next().and_then(|s| s.parse().ok()).unwrap();
+    Hand {
+        cards,
+        bid,
+        kind: Kind::new(&cards),
+        lst: &CARDS,
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
+enum Kind {
+    Five,
+    Four,
+    FullHouse,
+    Three,
+    TwoPair,
+    OnePair,
+    High,
+}
+
+impl Kind {
+    fn new(cards: &[char]) -> Self {
+        let map = cards.iter().cloned().counts();
+        match map.len() {
+            1 => Kind::Five,
+            5 => Kind::High,
+            4 => Kind::OnePair,
+            2 => {
+                if map.values().contains(&4) {
+                    Kind::Four // AA8AA
+                } else {
+                    Kind::FullHouse // 23332
+                }
+            }
+            3 => {
+                if map.values().contains(&3) {
+                    Kind::Three // TTT98
+                } else {
+                    Kind::TwoPair // 23432
+                }
+            }
+            _ => unreachable!(),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy)]
+struct Hand {
+    cards: [char; 5],
+    bid: usize,
+    kind: Kind,
+    lst: &'static [char; 13],
+}
+
+impl PartialEq for Hand {
+    fn eq(&self, other: &Self) -> bool {
+        self.cards == other.cards
+    }
+}
+
+impl Eq for Hand {}
+
+impl PartialOrd for Hand {
+    #[allow(clippy::non_canonical_partial_ord_impl)]
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        if self.kind == other.kind {
+            self.cards
+                .into_iter()
+                .zip(other.cards)
+                .find_map(|(left, right)| {
+                    let l = self.lst.iter().position(|c| *c == left);
+                    let r = self.lst.iter().position(|c| *c == right);
+                    match l.partial_cmp(&r) {
+                        Some(std::cmp::Ordering::Less) => Some(std::cmp::Ordering::Greater),
+                        Some(std::cmp::Ordering::Greater) => Some(std::cmp::Ordering::Less),
+                        _ => None,
+                    }
+                })
+        } else if self.kind < other.kind {
+            Some(std::cmp::Ordering::Greater)
+        } else {
+            Some(std::cmp::Ordering::Less)
+        }
+    }
+}
+
+impl Ord for Hand {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        self.partial_cmp(other).unwrap_or(std::cmp::Ordering::Equal)
+    }
+}
+
+impl Hand {
+    fn update(mut self) -> Self {
+        if self.cards.contains(&'J') {
+            let freq = self
+                .cards
+                .iter()
+                .filter(|c| **c != 'J')
+                .cloned()
+                .counts()
+                .into_iter()
+                .max_by_key(|(_k, c)| *c)
+                .map(|(k, _c)| k)
+                .unwrap_or('J'); // JJJJJ
+            let cards = self
+                .cards
+                .iter()
+                .map(|c| if *c == freq { 'J' } else { *c })
+                .collect::<Vec<_>>();
+            self.kind = Kind::new(&cards);
+        }
+        self.lst = &CARDS2;
+        self
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    const TEST: &'static str = r#"32T3K 765
+    T55J5 684
+    KK677 28
+    KTJJT 220
+    QQQJA 483"#;
+
+    const INPUT: &'static str = include_str!("../input.txt");
+
+    #[test]
+    fn test1() {
+        assert_eq!(p1(TEST), 6440);
+        assert_eq!(p1(INPUT), 250898830);
+    }
+
+    #[test]
+    fn test2() {
+        assert_eq!(p2(TEST), 5905);
+        assert_eq!(p2(INPUT), 252127335);
+    }
+}

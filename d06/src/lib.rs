@@ -21,6 +21,14 @@ fn count(tm: &str, dst: &str) -> Option<usize> {
             .take_while(|trial| trial * (tm - trial) > dst)
             .count()
             * 2
+        // OR
+        // - trial^2 + tm*trial - dst = 0
+        // a = -1, b = tm, c = - dst
+        // sqrt(b^2 - 4 a*c)
+        // sqrt = f64::sqrt((tm * tm - 4 * dst) as f64)
+        // hi = (tm + sqrt)/2
+        // lo = (tm - sqrt)/2
+        // hi - lo
     }
 
     let tm: usize = tm.parse().unwrap();
