@@ -15,23 +15,21 @@ fn p2(input: &str) -> usize {
 }
 
 fn count(tm: &str, dst: &str) -> Option<usize> {
+    fn ct(mid: usize, tm: usize, dst: usize) -> usize {
+        (1..=mid)
+            .rev()
+            .take_while(|trial| trial * (tm - trial) > dst)
+            .count()
+            * 2
+    }
+
     let tm: usize = tm.parse().unwrap();
     let dst: usize = dst.parse().unwrap();
     let count = if tm & 1 == 1 {
         // odd time
-        let mid = (tm - 1) / 2;
-        (1..=mid)
-            .rev()
-            .filter(|trial| trial * (tm - trial) > dst)
-            .count()
-            * 2
+        ct((tm - 1) / 2, tm, dst)
     } else {
-        let mid = tm / 2;
-        let c = (1..=mid)
-            .rev()
-            .filter(|trial| trial * (tm - trial) > dst)
-            .count()
-            * 2;
+        let c = ct(tm / 2, tm, dst);
         if c > 0 {
             c - 1
         } else {
