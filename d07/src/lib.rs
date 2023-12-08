@@ -2,13 +2,9 @@
 
 use itertools::Itertools;
 
-const CARDS: [char; 13] = [
-    'A', 'K', 'Q', 'J', 'T', '9', '8', '7', '6', '5', '4', '3', '2',
-];
+const CARDS: &[u8; 13] = b"AKQJT98765432";
 
-const CARDS2: [char; 13] = [
-    'A', 'K', 'Q', 'T', '9', '8', '7', '6', '5', '4', '3', '2', 'J',
-];
+const CARDS2: &[u8; 13] = b"AKQT98765432J";
 
 fn p1(input: &str) -> usize {
     solve(input, parse_line)
@@ -30,19 +26,13 @@ fn solve(input: &str, parse: fn(&str) -> Hand) -> usize {
 
 fn parse_line(line: &str) -> Hand {
     let mut it = line.split_whitespace();
-    let cards: [char; 5] = it
-        .next()
-        .unwrap()
-        .chars()
-        .collect::<Vec<_>>()
-        .try_into()
-        .unwrap();
+    let cards: [u8; 5] = it.next().unwrap().as_bytes().to_vec().try_into().unwrap();
     let bid = it.next().and_then(|s| s.parse().ok()).unwrap();
     Hand {
         cards,
         bid,
         kind: Kind::new(&cards),
-        lst: &CARDS,
+        lst: CARDS,
     }
 }
 
@@ -58,7 +48,7 @@ enum Kind {
 }
 
 impl Kind {
-    fn new(cards: &[char]) -> Self {
+    fn new(cards: &[u8]) -> Self {
         let counts = cards
             .iter()
             .counts()
@@ -81,10 +71,10 @@ impl Kind {
 
 #[derive(Debug, Clone, Copy)]
 struct Hand {
-    cards: [char; 5],
+    cards: [u8; 5],
     bid: usize,
     kind: Kind,
-    lst: &'static [char; 13],
+    lst: &'static [u8; 13],
 }
 
 impl PartialEq for Hand {
@@ -108,7 +98,7 @@ impl PartialOrd for Hand {
                     match l.partial_cmp(&r) {
                         Some(std::cmp::Ordering::Less) => Some(std::cmp::Ordering::Greater),
                         Some(std::cmp::Ordering::Greater) => Some(std::cmp::Ordering::Less),
-                        _ => None,
+                        _ => None, // skips l==r case
                     }
                 })
         } else if self.kind < other.kind {
@@ -127,25 +117,25 @@ impl Ord for Hand {
 
 impl Hand {
     fn update(mut self) -> Self {
-        if self.cards.contains(&'J') {
+        if self.cards.contains(&b'J') {
             let freq = self
                 .cards
                 .iter()
-                .filter(|c| **c != 'J')
+                .filter(|b| **b != b'J')
                 .cloned()
                 .counts()
                 .into_iter()
                 .max_by_key(|(_k, c)| *c)
                 .map(|(k, _c)| k)
-                .unwrap_or('J'); // JJJJJ
+                .unwrap_or(b'J'); // JJJJJ
             let cards = self
                 .cards
                 .iter()
-                .map(|c| if *c == freq { 'J' } else { *c })
+                .map(|b| if *b == freq { b'J' } else { *b })
                 .collect::<Vec<_>>();
             self.kind = Kind::new(&cards);
         }
-        self.lst = &CARDS2;
+        self.lst = CARDS2;
         self
     }
 }
