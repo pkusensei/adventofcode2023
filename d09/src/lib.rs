@@ -1,41 +1,36 @@
 #![allow(dead_code)]
 
 fn p1(input: &str) -> i64 {
-    solve(input, true)
-}
-
-fn p2(input: &str) -> i64 {
     solve(input, false)
 }
 
-fn solve(input: &str, p1: bool) -> i64 {
+fn p2(input: &str) -> i64 {
+    solve(input, true)
+}
+
+fn solve(input: &str, p2: bool) -> i64 {
     input
         .lines()
         .map(|line| {
-            let nums = parse_line(line).collect::<Vec<_>>();
-            calc(&nums, p1)
+            let mut nums = parse_line(line).collect::<Vec<_>>();
+            if p2 {
+                nums.reverse()
+            }
+            calc(&nums)
         })
         .sum()
 }
 
-fn calc(nums: &[i64], p1: bool) -> i64 {
+fn calc(nums: &[i64]) -> i64 {
     let delta = nums
         .iter()
         .zip(nums.iter().skip(1))
         .map(|(l, r)| r - l)
         .collect::<Vec<_>>();
-    if p1 {
-        if delta.iter().all(|n| *n == 0) {
-            *nums.last().unwrap()
-        } else {
-            nums.last().unwrap() + calc(&delta, p1)
-        }
+    if delta.iter().all(|n| *n == 0) {
+        *nums.last().unwrap()
     } else {
-        if delta.iter().all(|n| *n == 0) {
-            *nums.first().unwrap()
-        } else {
-            nums.first().unwrap() - calc(&delta, p1)
-        }
+        nums.last().unwrap() + calc(&delta)
     }
 }
 
