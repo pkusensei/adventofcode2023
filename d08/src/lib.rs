@@ -40,31 +40,34 @@ fn solve(
     start: &str,
     end: fn(&str) -> bool,
 ) -> usize {
-    let mut count = 0;
     let mut curr = start;
-    loop {
-        let byte = inst.as_bytes()[count % inst.len()];
-        curr = if byte == b'L' {
-            map[curr].0
-        } else {
-            map[curr].1
-        };
-        count += 1;
-        if end(curr) {
-            break;
-        }
-    }
-    count
+    inst.bytes()
+        .cycle()
+        .enumerate()
+        .find_map(|(idx, byte)| {
+            curr = if byte == b'L' {
+                map[curr].0
+            } else {
+                map[curr].1
+            };
+            if end(curr) {
+                Some(idx + 1)
+            } else {
+                None
+            }
+        })
+        .unwrap()
 }
 
 fn parse(input: &str) -> (&str, HashMap<&str, (&str, &str)>) {
     let mut lines = input.lines();
     let inst = lines.next().unwrap();
+    // Wow this thing kills performance
+    let re = Regex::new(r#"(\w+)"#).unwrap();
 
     let map = lines
         .skip(1)
         .map(|line| {
-            let re = Regex::new(r#"(\w+)"#).unwrap();
             let mut it = re.find_iter(line).map(|m| m.as_str());
             (it.next().unwrap(), (it.next().unwrap(), it.next().unwrap()))
         })
