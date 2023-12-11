@@ -14,7 +14,7 @@ fn p2(input: &str) -> usize {
     let main_loop = find_loop(start, &map);
     let mut count = 0;
     for (y, line) in input.lines().enumerate() {
-        for (x, _) in line.bytes().enumerate() {
+        for x in 0..line.len() {
             let coord = (x + 1, y + 1);
             if main_loop.contains(&coord) {
                 continue;
@@ -46,8 +46,7 @@ fn p2(input: &str) -> usize {
 
 fn find_loop(start: Coord, map: &HashMap<Coord, [Dir; 2]>) -> HashSet<Coord> {
     let mut seen = HashSet::new();
-    let mut pipes = VecDeque::new();
-    pipes.push_back(start);
+    let mut pipes = VecDeque::from([start]);
     while let Some(pipe) = pipes.pop_front() {
         if seen.contains(&pipe) {
             continue;
@@ -55,6 +54,7 @@ fn find_loop(start: Coord, map: &HashMap<Coord, [Dir; 2]>) -> HashSet<Coord> {
         seen.insert(pipe);
         for n in map[&pipe].map(|dir| neighbor(pipe, dir)) {
             if map.contains_key(&n) {
+                // this if cond is useless
                 pipes.push_back(n)
             }
         }
@@ -105,10 +105,7 @@ impl Dir {
             b'J' => [Dir::North, Dir::West],
             b'7' => [Dir::South, Dir::West],
             b'F' => [Dir::South, Dir::East],
-            _ => {
-                dbg!(shape);
-                unreachable!()
-            }
+            _ => unreachable!(),
         }
     }
 }
