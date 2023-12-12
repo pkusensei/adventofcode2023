@@ -1,6 +1,6 @@
 #![allow(dead_code)]
 
-use std::{cmp, collections::BTreeSet};
+use std::{cmp, collections::HashSet};
 
 use itertools::Itertools;
 
@@ -16,10 +16,10 @@ fn solve(input: &str, expand: usize) -> usize {
     let ((x_max, y_max), galaxies) = parse(input);
     let empty_rows = (0..=y_max)
         .filter(|&y| (0..=x_max).all(|x| !galaxies.contains(&(x, y))))
-        .collect::<BTreeSet<usize>>();
+        .collect::<Vec<_>>();
     let empty_cols = (0..=x_max)
         .filter(|&x| (0..=y_max).all(|y| !galaxies.contains(&(x, y))))
-        .collect::<BTreeSet<usize>>();
+        .collect::<Vec<_>>();
     galaxies
         .into_iter()
         .combinations(2)
@@ -33,18 +33,18 @@ fn solve(input: &str, expand: usize) -> usize {
 
 type Coord = (usize, usize);
 
-fn manhattan_dist(c1: &Coord, c2: &Coord) -> usize {
+const fn manhattan_dist(c1: &Coord, c2: &Coord) -> usize {
     c1.0.abs_diff(c2.0) + c1.1.abs_diff(c2.1)
 }
 
-fn expand_count(a: usize, b: usize, empty: &BTreeSet<usize>) -> usize {
-    (cmp::min(a, b)..cmp::max(a, b))
-        .collect::<BTreeSet<_>>()
-        .intersection(empty)
+fn expand_count(a: usize, b: usize, empty: &[usize]) -> usize {
+    empty
+        .iter()
+        .filter(|&&n| cmp::min(a, b) < n && n < cmp::max(a, b))
         .count()
 }
 
-fn parse(input: &str) -> (Coord, BTreeSet<Coord>) {
+fn parse(input: &str) -> (Coord, HashSet<Coord>) {
     let y_max = input.lines().count();
     let x_max = input.lines().map(|line| line.len()).max().unwrap();
     let galaxies = input

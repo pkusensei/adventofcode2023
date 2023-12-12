@@ -10,7 +10,7 @@ fn p1(input: &str) -> usize {
 }
 
 fn p2(input: &str) -> usize {
-    fn gcd(a: usize, b: usize) -> usize {
+    const fn gcd(a: usize, b: usize) -> usize {
         if b == 0 {
             a
         } else {
@@ -18,7 +18,7 @@ fn p2(input: &str) -> usize {
         }
     }
 
-    fn lcm(a: usize, b: usize) -> usize {
+    const fn lcm(a: usize, b: usize) -> usize {
         a / gcd(a, b) * b
     }
 

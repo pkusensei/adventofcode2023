@@ -62,7 +62,7 @@ fn find_loop(start: Coord, map: &HashMap<Coord, [Dir; 2]>) -> HashSet<Coord> {
     seen
 }
 
-fn neighbor(coord: Coord, dir: Dir) -> Coord {
+const fn neighbor(coord: Coord, dir: Dir) -> Coord {
     match dir {
         Dir::North => (coord.0, coord.1 - 1),
         Dir::South => (coord.0, coord.1 + 1),
@@ -97,7 +97,7 @@ enum Dir {
 }
 
 impl Dir {
-    fn dirs(shape: u8) -> [Self; 2] {
+    const fn dirs(shape: u8) -> [Self; 2] {
         match shape {
             b'|' => [Dir::North, Dir::South],
             b'-' => [Dir::East, Dir::West],

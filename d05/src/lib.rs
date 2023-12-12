@@ -94,7 +94,7 @@ struct Seeds {
 }
 
 impl Seeds {
-    fn new(st: u64, rng: u64) -> Self {
+    const fn new(st: u64, rng: u64) -> Self {
         Seeds { st, rng }
     }
 
@@ -148,7 +148,7 @@ impl Seeds {
         res
     }
 
-    fn split_at(self, point: u64) -> Option<(Self, Self)> {
+    const fn split_at(self, point: u64) -> Option<(Self, Self)> {
         if self.st < point && self.st + self.rng > point {
             // 1, 2, 3
             //    2
@@ -182,7 +182,7 @@ impl Seeds {
             .unwrap_or(self)
     }
 
-    fn update_range(self, range: &Range) -> Option<Self> {
+    const fn update_range(self, range: &Range) -> Option<Self> {
         //    2
         // 1, 2, 3
         if range.src <= self.st && self.st + self.rng <= range.src + range.rng {
