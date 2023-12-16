@@ -1,9 +1,14 @@
 #![allow(dead_code)]
 
-use std::collections::{HashMap, HashSet, VecDeque};
+use std::{
+    collections::{HashMap, HashSet, VecDeque},
+    convert::identity,
+};
 
 use itertools::Itertools;
 use rayon::prelude::*;
+
+use utils::Coord;
 
 fn p1(input: &str) -> usize {
     let (lens, grid) = parse(input);
@@ -58,22 +63,9 @@ fn bfs(start: Beam, lens: Coord, grid: &HashMap<Coord, u8>) -> usize {
 }
 
 fn parse(input: &str) -> (Coord, HashMap<Coord, u8>) {
-    let y_len = input.lines().count();
-    let x_len = input.lines().next().map(|s| s.trim().len()).unwrap();
-    let grid = input
-        .lines()
-        .enumerate()
-        .flat_map(|(y, line)| {
-            line.trim()
-                .bytes()
-                .enumerate()
-                .map(move |(x, b)| ((x, y), b))
-        })
-        .collect();
-    ((x_len, y_len), grid)
+    let (lens, it) = utils::parse_with_lens(input, &identity);
+    (lens, it.collect())
 }
-
-type Coord = (usize, usize);
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 enum Dir {

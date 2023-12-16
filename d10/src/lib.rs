@@ -1,8 +1,11 @@
 #![allow(dead_code)]
 
-use std::collections::{HashMap, HashSet, VecDeque};
+use std::{
+    collections::{HashMap, HashSet, VecDeque},
+    convert::identity,
+};
 
-type Coord = (usize, usize);
+use utils::Coord;
 
 fn p1(input: &str) -> usize {
     let (start, map) = parse(input);
@@ -72,17 +75,16 @@ const fn neighbor(coord: Coord, dir: Dir) -> Coord {
 }
 
 fn parse(input: &str) -> (Coord, HashMap<Coord, [Dir; 2]>) {
+    let (_, it) = utils::parse_with_lens(input, &identity);
     let mut map = HashMap::new();
     let mut start = (0, 0);
-    for (y, line) in input.lines().enumerate() {
-        for (x, byte) in line.trim().bytes().enumerate() {
-            let coord = (x + 1, y + 1);
-            if byte == b'S' {
-                start = coord;
-                map.insert(coord, Dir::dirs(b'F'));
-            } else if byte != b'.' {
-                map.insert(coord, Dir::dirs(byte));
-            }
+    for (c, byte) in it {
+        let coord = (c.0 + 1, c.1 + 1);
+        if byte == b'S' {
+            start = coord;
+            map.insert(coord, Dir::dirs(b'F'));
+        } else if byte != b'.' {
+            map.insert(coord, Dir::dirs(byte));
         }
     }
     (start, map)

@@ -1,9 +1,11 @@
 #![allow(dead_code)]
 
-use std::{cmp, collections::HashMap};
+use std::{cmp, collections::HashMap, convert::identity};
 
 use itertools::Itertools;
 use regex::Regex;
+
+use utils::Coord;
 
 fn p1(input: &str) -> usize {
     solve(input, find)
@@ -71,22 +73,10 @@ fn parse<'a>(
 }
 
 fn parse_chunk(chunk: &str) -> (Coord, HashMap<Coord, u8>) {
-    let y_len = chunk.lines().count();
-    let x_len = chunk.lines().next().map(|s| s.trim().len()).unwrap();
-    let map = chunk
-        .lines()
-        .enumerate()
-        .flat_map(|(y, line)| {
-            line.trim()
-                .bytes()
-                .enumerate()
-                .map(move |(x, b)| ((x, y), b))
-        })
-        .collect();
-    ((x_len, y_len), map)
+    let (lens, it) = utils::parse_with_lens(chunk, &identity);
+    (lens, it.collect())
 }
 
-type Coord = (usize, usize);
 type FindFn = fn(Coord, &HashMap<Coord, u8>) -> (Option<usize>, Option<usize>);
 
 #[cfg(test)]

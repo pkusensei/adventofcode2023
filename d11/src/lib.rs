@@ -1,8 +1,10 @@
 #![allow(dead_code)]
 
-use std::{cmp, collections::HashSet};
+use std::{cmp, collections::HashSet, convert::identity};
 
 use itertools::Itertools;
+
+use utils::Coord;
 
 fn p1(input: &str) -> usize {
     solve(input, 2)
@@ -31,8 +33,6 @@ fn solve(input: &str, expand: usize) -> usize {
         .sum()
 }
 
-type Coord = (usize, usize);
-
 const fn manhattan_dist(c1: &Coord, c2: &Coord) -> usize {
     c1.0.abs_diff(c2.0) + c1.1.abs_diff(c2.1)
 }
@@ -45,15 +45,11 @@ fn expand_count(a: usize, b: usize, empty: &[usize]) -> usize {
 }
 
 fn parse(input: &str) -> (Coord, HashSet<Coord>) {
-    let y_max = input.lines().count();
-    let x_max = input.lines().map(|line| line.len()).max().unwrap();
-    let galaxies = input
-        .lines()
-        .enumerate()
-        .flat_map(|(y, line)| line.bytes().enumerate().map(move |(x, b)| ((x, y), b)))
+    let (lens, it) = utils::parse_with_lens(input, &identity);
+    let galaxies = it
         .filter_map(|(c, b)| if b == b'#' { Some(c) } else { None })
         .collect();
-    ((x_max, y_max), galaxies)
+    (lens, galaxies)
 }
 
 #[cfg(test)]

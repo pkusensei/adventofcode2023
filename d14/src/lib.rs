@@ -2,6 +2,8 @@
 
 use std::collections::BTreeMap; // avoid Hash stuff
 
+use utils::Coord;
+
 fn p1(input: &str) -> usize {
     let ((x_len, y_len), rocks) = parse(input);
     score(y_len, &tilt_north((x_len, y_len), rocks))
@@ -114,24 +116,8 @@ fn tilt(before: &[Kind]) -> Vec<Kind> {
 }
 
 fn parse(input: &str) -> (Coord, BTreeMap<Coord, Kind>) {
-    let y_len = input.lines().count();
-    let x_len = input.lines().next().map(|s| s.trim().len()).unwrap();
-    let map = input
-        .lines()
-        .enumerate()
-        .flat_map(|(y, line)| {
-            line.trim().bytes().enumerate().map(move |(x, b)| {
-                let kind = match b {
-                    b'O' => Kind::Round,
-                    b'#' => Kind::Cubed,
-                    b'.' => Kind::Empty,
-                    _ => unreachable!(),
-                };
-                ((x, y), kind)
-            })
-        })
-        .collect();
-    ((x_len, y_len), map)
+    let (lens, it) = utils::parse_with_lens(input, &Kind::from);
+    (lens, it.collect())
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
@@ -141,7 +127,16 @@ enum Kind {
     Empty,
 }
 
-type Coord = (usize, usize);
+impl From<u8> for Kind {
+    fn from(value: u8) -> Self {
+        match value {
+            b'O' => Kind::Round,
+            b'#' => Kind::Cubed,
+            b'.' => Kind::Empty,
+            _ => unreachable!(),
+        }
+    }
+}
 
 #[cfg(test)]
 mod tests {
