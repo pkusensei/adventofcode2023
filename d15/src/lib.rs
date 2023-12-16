@@ -1,16 +1,16 @@
 #![allow(dead_code)]
 
-use std::{collections::HashMap, str::FromStr};
+use std::collections::HashMap;
 
 fn p1(input: &str) -> u32 {
-    input.trim().split(',').map(|s| hash(s.as_bytes())).sum()
+    input.trim().split(',').map(hash).sum()
 }
 
 fn p2(input: &str) -> u32 {
     let mut boxes: HashMap<u32, Vec<Lens>> = HashMap::new();
     for s in input.trim().split(',') {
-        let lens = Lens::from_str(s).unwrap();
-        let id = hash(&lens.label);
+        let lens = Lens::from(s);
+        let id = hash(lens.label);
         match (boxes.get_mut(&id), lens.focal) {
             (Some(b), Some(_)) => {
                 if let Some(idx) = b.iter().position(|item| item.label == lens.label) {
@@ -35,30 +35,29 @@ fn p2(input: &str) -> u32 {
         .flat_map(|(id, v)| {
             v.into_iter()
                 .enumerate()
-                .map(move |(idx, item)| (id + 1) * (idx as u32 + 1) * item.focal.unwrap_or(1))
+                .map(move |(idx, item)| (id + 1) * (idx as u32 + 1) * item.focal.unwrap())
         })
         .sum()
 }
 
-fn hash(s: &[u8]) -> u32 {
-    s.iter().fold(0, |curr, &b| (curr + b as u32) * 17 % 256)
+fn hash(s: &str) -> u32 {
+    s.bytes().fold(0, |curr, b| (curr + b as u32) * 17 % 256)
 }
 
-#[derive(Debug, Clone)]
-struct Lens {
-    label: Vec<u8>,
+#[derive(Debug, Clone, Copy)]
+struct Lens<'a> {
+    label: &'a str,
     focal: Option<u32>,
 }
 
-impl FromStr for Lens {
-    type Err = ();
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let mut it = s.split(&['=', '-']);
-        let label = it.next().map(|s| s.as_bytes().to_vec()).ok_or(())?;
+// FromStr cannot take 'a
+impl<'a> From<&'a str> for Lens<'a> {
+    fn from(value: &'a str) -> Self {
+        let mut it = value.split(&['=', '-']);
+        let label = it.next().unwrap();
         // '=' => Some; '-' => None
         let focal = it.next().and_then(|s| s.parse().ok());
-        Ok(Self { label, focal })
+        Self { label, focal }
     }
 }
 
