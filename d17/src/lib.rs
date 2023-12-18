@@ -33,10 +33,8 @@ fn dijkstra(
         steps: 0,
     };
     let st2 = State {
-        cost: 0,
-        pos: start,
         dir: Dir::South,
-        steps: 0,
+        ..st1
     };
     dist.insert(st1.into(), 0);
     dist.insert(st2.into(), 0);
@@ -67,7 +65,7 @@ fn dijkstra(
             };
             if next.steps > max_step || dist.get(&next.into()).is_some_and(|&c| c <= next.cost) {
                 // For p1 and p2
-                // Streak gets too long 
+                // Streak gets too long
                 // Or a better solution/path already exists
                 continue;
             }
