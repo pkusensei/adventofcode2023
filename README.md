@@ -49,32 +49,41 @@ For a target string with a mix of `'?', '#', '.'`, the naive brute-force solutio
 
 The DP solution. For any string `value` and `pattern`, use both together as a key to cache recursion result. When in recursion, check that:
     
-    - End condition #1
-        When `value.is_empty()`, if `pattern` is also empty, this means both are depleted and it is a match. Otherwise it is not.
-
-    - End condition #2
-        `value.contains('#')` but `pattern` is empty. Match fails.
-
-    - End condition #3
-        `value` is shorter than `pattern[0]`, i.e not enough potential `'#'`s. Match fails.
-
-    - End condition #4
-        Fall thru from #3. `value` is long enough, but in the first `pattern[0]` chars/bytes there is at least one `'.'`. Match fails.
-
-    - End condition #5
-        Fall thru from #3 and #4. If pattern has only one element and `value.len == pattern[0]`, match succeeds. 
-
-    - End condition #6
-        Fall thru from #3, #4, and #5. `value` is longer than `pattern[0]` and its first `pattern[0]` chars are `'#'`, but its `pattern[0]` char is still `'#'`. Match fails.
-
-    - Recursion #1
-        `value.starts_with('.')`, recurse the rest of the string. 
+- End condition #1
     
-    - Recursion #2
-        `value.starts_with('?')`, either replace first char with `'#'` and recurse the whole string, or skip it and do basically #1.
+    When `value.is_empty()`, if `pattern` is also empty, this means both are depleted and it is a match. Otherwise it is not.
 
-    - Recursion #3
-        End #4, #5, and #6 guarantee that `value` starts with a block of `'#'`s whose length equals `pattern[0]` exactly, i.e after those `'#'`s no `'#'` follows immediately. Chop those `'#'` off `value` and `pattern[0]` off `pattern`, recurse the rest of those. 
+- End condition #2
+    
+    `value.contains('#')` but `pattern` is empty. Match fails.
+
+- End condition #3
+    
+    `value` is shorter than `pattern[0]`, i.e not enough potential `'#'`s. Match fails.
+
+- End condition #4
+    
+    Fall thru from #3. `value` is long enough, but in the first `pattern[0]` chars/bytes there is at least one `'.'`. Match fails.
+
+- End condition #5
+    
+    Fall thru from #3 and #4. If pattern has only one element and `value.len == pattern[0]`, match succeeds. 
+
+- End condition #6
+    
+    Fall thru from #3, #4, and #5. `value` is longer than `pattern[0]` and its first `pattern[0]` chars are `'#'`, but its `pattern[0]` char is still `'#'`. Match fails.
+
+- Recursion #1
+    
+    `value.starts_with('.')`, recurse the rest of the string. 
+    
+- Recursion #2
+    
+    `value.starts_with('?')`, either replace first char with `'#'` and recurse the whole string, or skip it and do basically #1.
+
+- Recursion #3
+    
+    End #4, #5, and #6 guarantee that `value` starts with a block of `'#'`s whose length equals `pattern[0]` exactly, i.e after those `'#'`s no `'#'` follows immediately. Chop those `'#'` off `value` and `pattern[0]` off `pattern`, recurse the rest of those. 
 
 
 ### 13
