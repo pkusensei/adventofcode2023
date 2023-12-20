@@ -97,6 +97,7 @@ name = "d08"
 version = "0.1.0"
 dependencies = [
  "regex",
+ "utils",
 ]
 
 [[package]]
@@ -170,6 +171,13 @@ name = "d19"
 version = "0.1.0"
 dependencies = [
  "regex",
+]
+
+[[package]]
+name = "d20"
+version = "0.1.0"
+dependencies = [
+ "utils",
 ]
 
 [[package]]
