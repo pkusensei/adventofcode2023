@@ -10,18 +10,6 @@ fn p1(input: &str) -> usize {
 }
 
 fn p2(input: &str) -> usize {
-    const fn gcd(a: usize, b: usize) -> usize {
-        if b == 0 {
-            a
-        } else {
-            gcd(b, a % b)
-        }
-    }
-
-    const fn lcm(a: usize, b: usize) -> usize {
-        a / gcd(a, b) * b
-    }
-
     let (inst, map) = parse(input);
     map.keys()
         .filter_map(|s| {
@@ -31,7 +19,7 @@ fn p2(input: &str) -> usize {
                 None
             }
         })
-        .fold(1, lcm) // reduce(lcm).unwrap()
+        .fold(1, utils::lcm) // reduce(lcm).unwrap()
 }
 
 fn solve(
