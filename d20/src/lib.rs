@@ -120,7 +120,7 @@ fn run2(modules: &mut HashMap<&'static str, Module>, target: &str) -> usize {
     count
 }
 
-fn parse(input: &'static str) -> impl Iterator<Item = Module> + '_ {
+fn parse(input: &'static str) -> impl Iterator<Item = Module> {
     input.lines().map(|line| {
         let mut it = line.split("->");
         let n = it.next().unwrap().trim();
