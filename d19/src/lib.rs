@@ -12,8 +12,8 @@ fn p1(input: &str) -> u32 {
     let mut accepted = vec![];
     let partex = Regex::new(r#"\{x=(\d+),m=(\d+),a=(\d+),s=(\d+)}"#).unwrap();
     for part in partex.captures_iter(chunks.next().unwrap()).map(|c| {
-        let (_, p) = c.extract::<4>();
-        parse_part(p)
+        let (_, nums) = c.extract::<4>();
+        parse_part(nums)
     }) {
         let mut curr = "in";
         while curr != "A" && curr != "R" {
@@ -37,12 +37,7 @@ fn p2(input: &str) -> usize {
     let lines = empty.split(input).next().unwrap();
     let rules = parse(lines);
 
-    let start = HashMap::from([
-        (b'x', (1, 4000)),
-        (b'm', (1, 4000)),
-        (b'a', (1, 4000)),
-        (b's', (1, 4000)),
-    ]);
+    let start = HashMap::from(b"xmas".map(|b| (b, (1, 4000))));
     solve("in", start, &rules)
 }
 
@@ -102,15 +97,12 @@ fn parse_rule<'a>([start, line]: [&'a str; 2], re: &Regex) -> (&'a str, Vec<Rule
     (start, rules)
 }
 
-fn parse_part([x, m, a, s]: [&str; 4]) -> Part {
-    [
-        (b'x', x.parse().unwrap()),
-        (b'm', m.parse().unwrap()),
-        (b'a', a.parse().unwrap()),
-        (b's', s.parse().unwrap()),
-    ]
-    .into_iter()
-    .collect()
+fn parse_part(nums: [&str; 4]) -> Part {
+    b"xmas"
+        .iter()
+        .zip(nums)
+        .map(|(&b, s)| (b, s.parse().unwrap()))
+        .collect()
 }
 
 type Part = HashMap<u8, u32>;
