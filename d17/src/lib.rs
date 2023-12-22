@@ -2,7 +2,7 @@
 
 use std::collections::{BinaryHeap, HashMap};
 
-use utils::Coord;
+use utils::{Coord, Dir};
 
 fn p1(input: &str) -> u32 {
     let ((x, y), grid) = parse(input);
@@ -82,16 +82,7 @@ fn dijkstra(
 }
 
 fn neighbors((x, y): Coord, dir: Dir, (x_len, y_len): Coord) -> Vec<(Coord, Dir)> {
-    const fn deltas(x: usize, y: usize) -> [(Coord, Dir); 4] {
-        [
-            ((x, y.saturating_sub(1)), Dir::North),
-            ((x, y + 1), Dir::South),
-            ((x.saturating_sub(1), y), Dir::West),
-            ((x + 1, y), Dir::East),
-        ]
-    }
-
-    deltas(x, y)
+    utils::deltas(x, y)
         .into_iter()
         .filter_map(|(n, d)| {
             if n == (x, y) || n.0 > x_len - 1 || n.1 > y_len - 1 || d == dir.flip() {
@@ -106,25 +97,6 @@ fn neighbors((x, y): Coord, dir: Dir, (x_len, y_len): Coord) -> Vec<(Coord, Dir)
 fn parse(input: &str) -> (Coord, HashMap<Coord, u32>) {
     let (lens, it) = utils::parse_with_lens(input, &|b| (b - b'0').into());
     (lens, it.collect())
-}
-
-#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
-enum Dir {
-    North,
-    South,
-    West,
-    East,
-}
-
-impl Dir {
-    const fn flip(self) -> Self {
-        match self {
-            Dir::North => Dir::South,
-            Dir::South => Dir::North,
-            Dir::West => Dir::East,
-            Dir::East => Dir::West,
-        }
-    }
 }
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]

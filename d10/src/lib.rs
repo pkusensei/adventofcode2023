@@ -5,7 +5,7 @@ use std::{
     convert::identity,
 };
 
-use utils::Coord;
+use utils::{Coord, Dir};
 
 fn p1(input: &str) -> usize {
     let (start, map) = parse(input);
@@ -82,33 +82,23 @@ fn parse(input: &str) -> (Coord, HashMap<Coord, [Dir; 2]>) {
         let coord = (c.0 + 1, c.1 + 1);
         if byte == b'S' {
             start = coord;
-            map.insert(coord, Dir::dirs(b'F'));
+            map.insert(coord, dirs(b'F'));
         } else if byte != b'.' {
-            map.insert(coord, Dir::dirs(byte));
+            map.insert(coord, dirs(byte));
         }
     }
     (start, map)
 }
 
-#[derive(Debug, Clone, Copy, PartialEq)]
-enum Dir {
-    North,
-    South,
-    East,
-    West,
-}
-
-impl Dir {
-    const fn dirs(shape: u8) -> [Self; 2] {
-        match shape {
-            b'|' => [Dir::North, Dir::South],
-            b'-' => [Dir::East, Dir::West],
-            b'L' => [Dir::North, Dir::East],
-            b'J' => [Dir::North, Dir::West],
-            b'7' => [Dir::South, Dir::West],
-            b'F' => [Dir::South, Dir::East],
-            _ => unreachable!(),
-        }
+const fn dirs(shape: u8) -> [Dir; 2] {
+    match shape {
+        b'|' => [Dir::North, Dir::South],
+        b'-' => [Dir::East, Dir::West],
+        b'L' => [Dir::North, Dir::East],
+        b'J' => [Dir::North, Dir::West],
+        b'7' => [Dir::South, Dir::West],
+        b'F' => [Dir::South, Dir::East],
+        _ => unreachable!(),
     }
 }
 

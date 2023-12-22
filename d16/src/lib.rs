@@ -8,7 +8,7 @@ use std::{
 use itertools::Itertools;
 use rayon::prelude::*;
 
-use utils::Coord;
+use utils::{Coord, Dir};
 
 fn p1(input: &str) -> usize {
     let (lens, grid) = parse(input);
@@ -65,14 +65,6 @@ fn bfs(start: Beam, lens: Coord, grid: &HashMap<Coord, u8>) -> usize {
 fn parse(input: &str) -> (Coord, HashMap<Coord, u8>) {
     let (lens, it) = utils::parse_with_lens(input, &identity);
     (lens, it.collect())
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-enum Dir {
-    North,
-    South,
-    West,
-    East,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]

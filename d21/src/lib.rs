@@ -24,7 +24,7 @@ fn p1(input: &str, steps: usize) -> usize {
     curr.len()
 }
 
-// Still grappling with this one. 
+// Still grappling with this one.
 // https://github.com/villuna/aoc23/wiki/A-Geometric-solution-to-advent-of-code-2023,-day-21
 fn p2(input: &str) -> (usize, usize) {
     let (lens, start, grid) = parse(input);
@@ -80,17 +80,9 @@ fn p2(input: &str) -> (usize, usize) {
 }
 
 fn proceed(curr: Coord, grid: &HashMap<Coord, u8>) -> impl Iterator<Item = Coord> + '_ {
-    const fn deltas((x, y): Coord) -> [Coord; 4] {
-        [
-            (x.saturating_sub(1), y),
-            (x + 1, y),
-            (x, y.saturating_sub(1)),
-            (x, y + 1),
-        ]
-    }
-
-    deltas(curr)
+    utils::deltas(curr.0, curr.1)
         .into_iter()
+        .map(|(c, _)| c)
         .filter(move |&c| c != curr && grid.get(&c).is_some_and(|&v| v != b'#'))
 }
 
