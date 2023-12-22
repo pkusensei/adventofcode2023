@@ -130,3 +130,12 @@ Regex is hard, and apparently different languages' support for regex varies😥 
 
 Bowed to borrow checker and marked every string behind `&'static`. It's still better than allocating `String`s I guess. Part 1 is more of a reading comprehension problem, and I readied a loop detection, which might be overkill. Part 2 is very dependent on input shape, apparently carefully crafted. Find the node feeding into the last node, then dig one step back to find the input nodes. For each input node, find the loop size that satisfies and calculate their LCM. There's also an [SVG file](./d20/graph.svg) attached, generated with [Graphviz](https://graphviz.org/). 
 
+
+### 21
+
+Was misreading part 1. It asks the number of tiles reachable on the EXACT 64th step, not the total amount of tiles stepped on. Part 2 comes again with a very specific input and I still don't fully understand it. Shamelessly copied from [this post](https://github.com/villuna/aoc23/wiki/A-Geometric-solution-to-advent-of-code-2023,-day-21) and called it a day.
+
+
+### 22
+
+Read. Read carefully. Read all highlighted parts. Read not only the puzzle, but the input too. 
