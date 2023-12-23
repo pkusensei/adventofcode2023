@@ -16,6 +16,35 @@ fn p1(input: &str) -> usize {
 fn p2(input: &str) -> usize {
     let (start, goal, grid) = parse(input);
 
+    let graph = condense(start, goal, grid);
+
+    let mut longest = 0;
+    let mut queue = VecDeque::from([(start, 0, HashSet::new())]);
+    while let Some((curr, dist, mut seen)) = queue.pop_front() {
+        if curr == goal {
+            longest = cmp::max(longest, dist);
+            continue;
+        }
+
+        if seen.contains(&curr) {
+            continue;
+        }
+        seen.insert(curr);
+        queue.extend(
+            graph[&curr]
+                .iter()
+                .map(|&(next, next_dist)| (next, next_dist + dist, seen.clone())),
+        );
+    }
+
+    longest
+}
+
+fn condense(
+    start: Coord,
+    goal: Coord,
+    grid: HashMap<Coord, u8>,
+) -> HashMap<Coord, Vec<(Coord, usize)>> {
     // Nodes with >3 neighbors; one is previous step
     let mut nodes: Vec<_> = grid
         .iter()
@@ -41,7 +70,6 @@ fn p2(input: &str) -> usize {
             if seen.contains(&curr) {
                 continue;
             }
-
             seen.insert(curr);
             queue.extend(
                 proceed2(curr, &seen, &grid)
@@ -50,27 +78,7 @@ fn p2(input: &str) -> usize {
             );
         }
     }
-
-    let mut longest = 0;
-    let mut queue = VecDeque::from([(start, 0, HashSet::new())]);
-    while let Some((curr, dist, mut curr_seen)) = queue.pop_front() {
-        if curr == goal {
-            longest = cmp::max(longest, dist);
-            continue;
-        }
-
-        if curr_seen.contains(&curr) {
-            continue;
-        }
-        curr_seen.insert(curr);
-        queue.extend(
-            graph[&curr]
-                .iter()
-                .map(|&(next, next_dist)| (next, next_dist + dist, curr_seen.clone())),
-        );
-    }
-
-    longest
+    graph
 }
 
 fn longest(
