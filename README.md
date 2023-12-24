@@ -139,3 +139,19 @@ Was misreading part 1. It asks the number of tiles reachable on the EXACT 64th s
 ### 22
 
 Read. Read carefully. Read all highlighted parts. Read not only the puzzle, but the input too. 
+
+
+### 23
+
+Part 2 is a "meta" BFS -- condense the graph first, and then traverse every path to find the longest. The queue keeps track of several states together: current node, current distance from start, and visited nodes on current path. 
+
+
+### 24
+
+Ah math and line intersections and slopes. Part 2 owes many thanks to [u/TheZigerionScammer's solution](https://topaz.github.io/paste/#XQAAAQAUDAAAAAAAAAA0m0pnuFI8c914retSmoIG4DZEdJ50slbD81JvM5mQSTreyJmJdG5ErENvWrbR2IGVD6L23kMHykcRMgYleThe4um56yMUrQ/uHrF3HuwBAoalVRDpkkpZviPXlbzmoSJoN4HPLXXSEz4to1kWUxZqDAP0KgxHB8lNPronrj59GR1o5RqFHlyAaZKCkCt0CT05d5nlzaQEh7vz9YXrWsW2L7GNJy0xlJasMTNGvbHeDPXyJItiHXa3MseDaV2MWdvPtI54e9x9dNc4x0wcP85QR7YrlVSs0zCm5rXLsb1nwhxW3xodqj8NIsH0KEVTE+RsDEuy9p9GD7XMP3k/ijz+cL4XqNUA16WFns+o63OLK8vjoiOK5hNuNhurOMMPFIZW6J4Gcf1a64jhwzu9ISgbCXSSR+Bds+Enp5Nwbt7ZwZ1dQ+Ht3zQ4fZeC6auWvC1ES+fsaFDO3vNSXhoUvOqqnk7jkpTDnwCCI3BDrpwD4ixNe9OOP3MMecfv0uWuZYp7IIgsVCQVXIFVmmhvdhQsZ0FmfBcbvK04YE8RMztc7U2dJ4gWw/yF69/CppBSQCPH4Kn0ZCtn0uYJiJXq9BbA7QiokCY4P+rK9k1S0QqL2nlmI1BqIZkboC3A/kV12oqDIfxCn3sylSN/NDGoXUhFaF+fwn7Q4tfyE9xnARW+3AxntYM6cMwc8ZcyyOlBnrM4iJgPsXteSvwdXl5b8YwEpUc/h+Y5JQp1PnFALM6GLx/q85mWShC+xF6KYfcJ4oWboeIVN9TYKhLU8m+MPFnqitqskmfRvaPb8LfK3OSdRFDZUg5N+wrGfxcdg8EtttL+/94x+9FAVz31BpkHQtwS5aMlUr1TpLphUbzn862x9UwmDlR3vhWBr/OeZ2FlQO3F01yGuH5MRytgVH7GHGDipyh7lXLjHA8L5RjuDDUZa7/gHUYHx0iW3dz7dC2bsSiWBpgAMP5YVdQhJMbVYyhP68Nw1H7hmHqwXB4u8k4QuXHeetPd3Z9lSUG4KSpjwy5ePYMdLaLI2KM1GInxXo3MC3rtKFvEr0NyV7ifJ8YBsmu9h26z8bv8qRN8SFBQ/IPrIcdrQI4AHXDg1hDr2641UlRFVGDTDebMhcKlR2nUEdko6UyNvb6FrmiwQTIGZT7E2Gb+X02v+DoWEaxLcG1Imdt6j/Tl9+PmcCa0P3V7/ucxC9GOAerwTAfcDEAhaUYOco9a0nxdRLDc9qbn8Fc3rvjsvTIoTwgykwqraj6xMWBdsCYs1/+CY+8A). The idea is:
+
+- If two line has the same vel on an axis, e.g `vx1 == vx2`, the crossing line must cross them both. Its velx must satisfy `(pos_x2 - pos_x1) % (velx - vx1) == 0`
+- Repeat that for all parallel pairs to narrow down `velx`, to a unique value. Find `vely` and `velz` too. 
+- Now use `y = mx + b` to find `pos_x`.
+
+Tried to use `z3` too, but it seems broken on Windows, ironically as an MS project. 
